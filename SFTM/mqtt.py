@@ -1,23 +1,39 @@
-from SFTM import mqtt_client
-TOPICS = ["/feeds/yolo-temp"]
-mqtt_client.subscribe(TOPICS)
+import sys
+from Adafruit_IO import MQTTClient
+
+ADAFRUIT_IO_KEY = 'aio_GYFv36l3lhXaAhbiBuz312N2xW5Y'
+ADAFRUIT_IO_USERNAME = 'tamquattnb123'
+FEED_IDS = ['yolo-temp', 'yolo-light', 'yolo-fan']
 
 
-@mqtt_client.on_connect()
-def handle_connect(client, userdata, flags, rc):
-    print(rc)
-    if rc == 0:
-        print('Connected successfully')
-        mqtt_client.subscribe(TOPIC)  # subscribe topic
-    else:
-        print('Bad connection. Code:', rc)
+def connected(client):
+    print('Connected to Adafruit IO!  Listening for {0} changes...'.format(
+        ', '.join(FEED_IDS)))
+    for feed_id in FEED_IDS:
+        client.subscribe(feed_id)
 
 
-@mqtt_client.on_message()
-def handle_mqtt_message(client, userdata, message):
-    data = dict(
-        topic=message.topic,
-        payload=message.payload.decode()
-    )
-    print(
-        'Received message on topic: {topic} with payload: {payload}'.format(**data))
+def subscribe(client, userdata, mid, granted_qos):
+    print('Subscribed to {0} with QoS {1}'.format(
+        FEED_IDS[mid-1], granted_qos[0]))
+
+
+def disconnected(client):
+    print('Disconnected from Adafruit IO!')
+    sys.exit(1)
+
+
+def message(client, feed_id, payload):
+    print('Feed {0} received new value: {1}'.format(feed_id, payload))
+
+
+client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
+
+client.on_connect = connected
+client.on_disconnect = disconnected
+client.on_message = message
+client.on_subscribe = subscribe
+
+client.connect()
+
+client.loop_blocking()
