@@ -22,9 +22,14 @@ def handle_disconnect():
     print('Client disconnected')
 
 
-@socketio.on('data')
+@socketio.on('light-status')
 def handle_light(data):
     print('Received light status:', data)
+
+
+@socketio.on('temperature-status')
+def handle_temperature(data):
+    print('Received temperature status:', data)
 
 
 ###############################################################
