@@ -1,7 +1,7 @@
 import sys
 from Adafruit_IO import MQTTClient
 
-ADAFRUIT_IO_KEY = 'aio_GYFv36l3lhXaAhbiBuz312N2xW5Y'
+ADAFRUIT_IO_KEY = 'aio_PHNU25ma1EQiIVlSYlVzJkXrp6Lt'
 ADAFRUIT_IO_USERNAME = 'tamquattnb123'
 FEED_IDS = ['yolo-temp', 'yolo-light', 'yolo-fan']
 
@@ -36,4 +36,4 @@ client.on_subscribe = subscribe
 
 client.connect()
 
-client.loop_blocking()
+client.loop_background()
